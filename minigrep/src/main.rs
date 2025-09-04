@@ -25,12 +25,12 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let config = Config::build(&args).unwrap_or_else(|err| {
-        println!("Error passing arguments: {err}");
+        eprintln!("Error passing arguments: {err}");
         process::exit(3);
     });
 
     if let Err(error) = run(config) {
-        println!("Applicaiton error: {error}");
+        eprintln!("Applicaiton error: {error}");
         process::exit(3);
     }
 }
