@@ -9,22 +9,28 @@ struct Config {
     ignore_case: bool,
 }
 impl Config {
-    fn build(args: &Vec<String>) -> Result<Config, &str> {
-        if args.len() < 3 {
-            return Err("Not enough arguments. Pass the searchstring and the file path");
-        }
+    fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next();
+
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Did not get a query string"),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Did not get a file path"),
+        };
         Ok(Config {
-            query: args[1].clone(),
-            file_path: args[2].clone(),
+            query: query,
+            file_path: file_path,
             ignore_case: env::var("IGNORE_CASE").is_ok(),
         })
     }
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let config = Config::build(&args).unwrap_or_else(|err| {
+    let config = Config::build(env::args()).unwrap_or_else(|err| {
         eprintln!("Error passing arguments: {err}");
         process::exit(3);
     });
